@@ -1,0 +1,94 @@
+﻿@using pontinhos.Grafos;
+@{
+    ViewData["Title"] = "PONTINHOS";
+}
+
+<div class="text-center">
+
+    <div>
+        <label class="switch">
+            <input type="checkbox" onclick="onoff()" id="onoff">
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+
+<canvas id="myCanvas" width="@Constantes.LarguraDoCanva" height="@Constantes.AlturaDoCanva" style="border:1px solid #000000; background-color: #000000;">
+</canvas>
+
+<script>
+    
+    const larguraDoVertice = @Constantes.LarguraDosVertices;
+    const ctx = document.getElementById("myCanvas").getContext("2d"); 
+    let nIntervId;
+
+    function limparCanva(){
+        ctx.clearRect(0, 0, @Constantes.LarguraDoCanva, @Constantes.AlturaDoCanva);
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, @Constantes.LarguraDoCanva, @Constantes.AlturaDoCanva);
+    }
+
+    function desenharVertice(x, y){
+        ctx.beginPath();
+        ctx.fillStyle = "white";
+        ctx.fillRect(x, y, larguraDoVertice, larguraDoVertice);
+    }
+
+    function desenharLinhaEntreVertices(x1, y1, x2, y2){
+        ctx.beginPath();
+        ctx.moveTo(x1 + larguraDoVertice / 2, y1 + larguraDoVertice / 2);
+        ctx.lineTo(x2 + larguraDoVertice / 2, y2 + larguraDoVertice / 2);
+        ctx.strokeStyle = "gray";
+        ctx.stroke();
+    }
+
+    async function fetchRandomGrafo() {
+        const response = await fetch('/pontinhos/random');
+        const grafo = await response.json();
+        return grafo;
+    }
+
+    function gerarGrafo(){
+        limparCanva()
+
+        fetchRandomGrafo().then(grafo => {
+
+            grafo.vertices.forEach((item) => {
+                desenharVertice(item.xCoord, item.yCoord)
+            })
+            
+            for(let i = 0; i < grafo.vertices.length; i++)
+            {
+                for(let j = 0; j < grafo.vertices.length; j++)
+                {
+                    if(i == j)
+                     continue;
+
+                    let matriz = grafo.matrizAdjacencias;
+                    let vertices = grafo.vertices;
+
+                    if (matriz[i][j] == 1)
+                        desenharLinhaEntreVertices(vertices[i].xCoord, vertices[i].yCoord, vertices[j].xCoord, vertices[j].yCoord)
+                }
+            }
+        });
+    }
+
+    function onoff() {
+        btn = document.getElementById('onoff');
+
+        if (btn.checked == true)
+        {
+            if (!nIntervId) {
+                nIntervId = setInterval(gerarGrafo, 450);
+            }
+        } 
+        else 
+        {
+            clearInterval(nIntervId);
+            nIntervId = null;
+        }
+    }
+
+</script> 
+
