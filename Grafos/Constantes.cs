@@ -3,7 +3,7 @@
     public static class Constantes
     {
         public static int LarguraDosVertices = 10;
-        public static int LarguraDoCanva = 1260;
-        public static int AlturaDoCanva = 750;
+        public static int LarguraDoCanva = 1705;
+        public static int AlturaDoCanva = 800;
     }
 }
